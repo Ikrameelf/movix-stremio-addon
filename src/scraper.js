@@ -15,7 +15,10 @@ const SEED_URLS = [
 let currentBaseURL = 'https://movix.men';
 let lastChecked = 0;
 const CHECK_INTERVAL = 30 * 60 * 1000; // Verifier toutes les 30 minutes
-
+const HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
+  'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8',
+};
 /**
  * Suit les redirections HTTP d'une URL et retourne l'URL finale.
  * Movix redirige automatiquement vers son nouveau domaine.
