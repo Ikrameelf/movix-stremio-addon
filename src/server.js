@@ -21,12 +21,49 @@ builder.defineCatalogHandler(async ({ type, id, extra }) => {
 
 // Meta handler
 builder.defineMetaHandler(async ({ type, id }) => {
+  if (type !== 'series') {
+    return {
+      meta: {
+        id,
+        type,
+        name: id.replace('movix_', '')
+      }
+    };
+  }
+
+  const linkB64 = id.replace('movix_', '');
+  const link = Buffer.from(linkB64, 'base64').toString('utf8');
+
+  if (link === 'https://movix.men/tv/219826') {
+    const videos = [];
+
+    for (let episode = 1; episode <= 30; episode++) {
+      videos.push({
+        id: `movix_${Buffer.from(
+          `https://movix.men/watch/tv/219826/s/1/e/${episode}`
+        ).toString('base64')}`,
+        title: `Épisode ${episode}`,
+        season: 1,
+        episode
+      });
+    }
+
+    return {
+      meta: {
+        id,
+        type: 'series',
+        name: 'Adım Farah',
+        description: 'Adım Farah',
+        videos
+      }
+    };
+  }
+
   return {
     meta: {
       id,
       type,
-      name: id.replace('movix_', ''),
-      description: 'Contenu de movix.tax'
+      name: link
     }
   };
 });
