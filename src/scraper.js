@@ -9,10 +9,10 @@ const cheerio = require('cheerio');
 // ============================================================
 
 const SEED_URLS = [
-  'https://movix.zip'
+  'https://movix.men'
 ];
 
-let currentBaseURL = 'https://movix.zip';
+let currentBaseURL = 'https://movix.men';
 let lastChecked = 0;
 const CHECK_INTERVAL = 30 * 60 * 1000; // Verifier toutes les 30 minutes
 
