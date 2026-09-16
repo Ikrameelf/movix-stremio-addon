@@ -116,45 +116,121 @@ async function fetchPage(url) {
 async function getMovies(skip = 0, search = '') {
   try {
     const BASE_URL = await getBaseURL();
+
+    // Page des films
+    const page = Math.floor(skip / 20) + 1;
+
+    // Recherche : on utilise la recherche du site si un terme est fourni
     const url = search
-      ? `${BASE_URL}/?s=${encodeURIComponent(search)}`
-      : `${BASE_URL}/films/page/${Math.floor(skip / 20) + 1}/`;
+      ? `${BASE_URL}/search?query=${encodeURIComponent(search)}`
+      : `${BASE_URL}/movies?page=${page}`;
+
+    console.log(`[Movix] Recherche films: ${url}`);
+
     const $ = await fetchPage(url);
     const items = [];
-    $('article, .post, .movie-item, .item').each((i, el) => {
-      const title = $(el).find('h2, h3, .title, .entry-title').first().text().trim();
-      const link = $(el).find('a').first().attr('href');
-      const img = $(el).find('img').first().attr('src') || '';
-      if (title && link) {
-        const id = 'movix_' + Buffer.from(link).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 40);
-        items.push({ id, type: 'movie', name: title, poster: img, link });
-      }
+
+    $('a[href*="/movie/"]').each((i, el) => {
+      const link = $(el).attr('href');
+
+      if (!link) return;
+
+      const fullLink = link.startsWith('http')
+        ? link
+        : new URL(link, BASE_URL).href;
+
+      // Évite les doublons
+      if (items.some(item => item.link === fullLink)) return;
+
+      const container = $(el);
+      const title =
+        container.find('h2, h3, h4').first().text().trim() ||
+        container.text().trim();
+
+      const img =
+        container.find('img').first().attr('src') ||
+        container.find('img').first().attr('data-src') ||
+        '';
+
+      if (!title) return;
+
+      const id = 'movix_' + Buffer.from(fullLink).toString('base64');
+
+      items.push({
+        id,
+        type: 'movie',
+        name: title,
+        poster: img,
+        link: fullLink
+      });
     });
-    return items;
+
+    console.log(`[Movix] Films trouvés: ${items.length}`);
+
+    return items.slice(0, 20);
+
   } catch (e) {
     console.error('Error fetching movies:', e.message);
     return [];
   }
 }
 
+
 async function getSeries(skip = 0, search = '') {
   try {
     const BASE_URL = await getBaseURL();
+
+    const page = Math.floor(skip / 20) + 1;
+
+    // Recherche : on utilise la recherche du site si un terme est fourni
     const url = search
-      ? `${BASE_URL}/?s=${encodeURIComponent(search)}`
-      : `${BASE_URL}/series/page/${Math.floor(skip / 20) + 1}/`;
+      ? `${BASE_URL}/search?query=${encodeURIComponent(search)}`
+      : `${BASE_URL}/tv-shows?page=${page}`;
+
+    console.log(`[Movix] Recherche séries: ${url}`);
+
     const $ = await fetchPage(url);
     const items = [];
-    $('article, .post, .serie-item, .item').each((i, el) => {
-      const title = $(el).find('h2, h3, .title, .entry-title').first().text().trim();
-      const link = $(el).find('a').first().attr('href');
-      const img = $(el).find('img').first().attr('src') || '';
-      if (title && link) {
-        const id = 'movix_' + Buffer.from(link).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 40);
-        items.push({ id, type: 'series', name: title, poster: img, link });
-      }
+
+    $('a[href*="/tv-show/"]').each((i, el) => {
+      const link = $(el).attr('href');
+
+      if (!link) return;
+
+      const fullLink = link.startsWith('http')
+        ? link
+        : new URL(link, BASE_URL).href;
+
+      // Évite les doublons
+      if (items.some(item => item.link === fullLink)) return;
+
+      const container = $(el);
+      const title =
+        container.find('h2, h3, h4').first().text().trim() ||
+        container.text().trim();
+
+      const img =
+        container.find('img').first().attr('src') ||
+        container.find('img').first().attr('data-src') ||
+        '';
+
+      if (!title) return;
+
+      const id = 'movix_' + Buffer.from(fullLink).toString('base64');
+
+      items.push({
+        id,
+        type: 'series',
+        name: title,
+        poster: img,
+        link: fullLink
+      });
     });
-    return items;
+
+    console.log(`[Movix] Séries trouvées: ${items.length}`);
+
+    return items.slice(0, 20);
+
   } catch (e) {
     console.error('Error fetching series:', e.message);
     return [];
