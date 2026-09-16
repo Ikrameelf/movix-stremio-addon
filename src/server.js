@@ -70,15 +70,17 @@ builder.defineMetaHandler(async ({ type, id }) => {
 
 // Stream handler
 builder.defineStreamHandler(async ({ type, id }) => {
-  try {
-    const linkB64 = id.replace('movix_', '');
-    const link = Buffer.from(linkB64, 'base64').toString('utf8');
-    const streams = await scraper.getStreams(link);
-    return { streams };
-  } catch (e) {
-    console.error(e);
-    return { streams: [] };
-  }
+  const linkB64 = id.replace('movix_', '');
+  const link = Buffer.from(linkB64, 'base64').toString('utf8');
+
+  console.log('[TEST STREAM]');
+  console.log('Type:', type);
+  console.log('ID:', id);
+  console.log('URL épisode:', link);
+
+  return {
+    streams: []
+  };
 });
 
 const PORT = process.env.PORT || 7000;
