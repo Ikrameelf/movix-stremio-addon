@@ -9,19 +9,10 @@ const cheerio = require('cheerio');
 // ============================================================
 
 const SEED_URLS = [
-  process.env.MOVIX_BASE_URL || 'https://movix.tax',
-  'https://movix.tax',
-  'https://movix.cx',
-  'https://movix.lol',
-  'https://movix.wtf',
+  'https://movix.zip'
 ];
 
-const HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
-  'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8',
-};
-
-let currentBaseURL = process.env.MOVIX_BASE_URL || 'https://movix.tax';
+let currentBaseURL = 'https://movix.zip';
 let lastChecked = 0;
 const CHECK_INTERVAL = 30 * 60 * 1000; // Verifier toutes les 30 minutes
 
