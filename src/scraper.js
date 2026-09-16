@@ -178,58 +178,17 @@ async function getMovies(skip = 0, search = '') {
 
 async function getSeries(skip = 0, search = '') {
   try {
-    const BASE_URL = await getBaseURL();
+    // TEST : on renvoie directement Adım Farah
+    // pour vérifier que Stremio reçoit correctement un résultat.
+    const link = 'https://movix.men/tv/219826';
 
-    const page = Math.floor(skip / 20) + 1;
-
-    // Recherche : on utilise la recherche du site si un terme est fourni
-    const url = search
-      ? `${BASE_URL}/search?query=${encodeURIComponent(search)}`
-      : `${BASE_URL}/tv-shows?page=${page}`;
-
-    console.log(`[Movix] Recherche séries: ${url}`);
-
-    const $ = await fetchPage(url);
-    const items = [];
-
-    $('a[href*="/tv-show/"]').each((i, el) => {
-      const link = $(el).attr('href');
-
-      if (!link) return;
-
-      const fullLink = link.startsWith('http')
-        ? link
-        : new URL(link, BASE_URL).href;
-
-      // Évite les doublons
-      if (items.some(item => item.link === fullLink)) return;
-
-      const container = $(el);
-      const title =
-        container.find('h2, h3, h4').first().text().trim() ||
-        container.text().trim();
-
-      const img =
-        container.find('img').first().attr('src') ||
-        container.find('img').first().attr('data-src') ||
-        '';
-
-      if (!title) return;
-
-      const id = 'movix_' + Buffer.from(fullLink).toString('base64');
-
-      items.push({
-        id,
-        type: 'series',
-        name: title,
-        poster: img,
-        link: fullLink
-      });
-    });
-
-    console.log(`[Movix] Séries trouvées: ${items.length}`);
-
-    return items.slice(0, 20);
+    return [{
+      id: 'movix_' + Buffer.from(link).toString('base64'),
+      type: 'series',
+      name: 'Adım Farah',
+      poster: '',
+      link
+    }];
 
   } catch (e) {
     console.error('Error fetching series:', e.message);
